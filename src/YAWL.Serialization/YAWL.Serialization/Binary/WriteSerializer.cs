@@ -39,22 +39,12 @@ namespace YAWL.Serialization.Binary
 
         public void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string))
         {
+            if (get == null)
+                throw new ArgumentNullException();
+
             var value = get.Compile()();
 
-            string name;
-
-            if (get.Body.NodeType == ExpressionType.Constant)
-            {
-                name = SerializationConstants.ConstantName;
-            }
-            else if (get.Body.NodeType == ExpressionType.MemberAccess)
-            {
-                name = (get.Body as MemberExpression)?.Member.Name;
-            }
-            else
-            {
-                name = SerializationConstants.DynamicName;
-            }
+            var name = ExpressionHelpers.GetNameFromExpression(get);
 
             Writer.Write(name);
             Writer.Write(value != null);

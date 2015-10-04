@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using YAWL.Serialization.Binary;
 
@@ -18,6 +19,14 @@ namespace YAWL.Serialization.Tests
         public void TestNullWriterException()
         {
             var serializer = new WriteSerializer(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestNullGet()
+        {
+            Expression<Func<string>> get = null;
+            TestWriteRead(w => w.Serialize(get, null), r => { });
         }
 
         [TestMethod]

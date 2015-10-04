@@ -37,6 +37,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpressionHelpers.cs" />
     <Compile Include="Binary\WriteSerializer.cs" />
     <Compile Include="ISerializable.cs" />
     <Compile Include="ISerializer.cs" />

@@ -50,11 +50,10 @@ namespace YAWL.Serialization.Binary
             else if (get.Body.NodeType == ExpressionType.MemberAccess)
             {
                 name = (get.Body as MemberExpression)?.Member.Name;
-
             }
             else
             {
-                throw new InvalidOperationException($"Expressions of type {get.Body.NodeType} are not supported.");
+                name = SerializationConstants.DynamicName;
             }
 
             Writer.Write(name);

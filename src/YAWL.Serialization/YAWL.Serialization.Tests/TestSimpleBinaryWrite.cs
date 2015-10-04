@@ -14,6 +14,13 @@ namespace YAWL.Serialization.Tests
         private string TestFunction() => "Function";
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestNullWriterException()
+        {
+            var serializer = new WriteSerializer(null);
+        }
+
+        [TestMethod]
         public void WriteProperty()
         {
             TestWriteRead(
@@ -25,6 +32,25 @@ namespace YAWL.Serialization.Tests
                     Assert.AreEqual(nameof(TestProperty), r.ReadString());
                     Assert.IsTrue(r.ReadBoolean());
                     Assert.AreEqual(TestProperty, r.ReadString());
+                });
+        }
+
+        [TestMethod]
+        public void WritePropertyTwice()
+        {
+            TestWriteRead(
+                s =>
+                {
+                    s.Serialize(() => TestProperty, null);
+                    s.Serialize(() => TestProperty, null);
+                }, r =>
+                {
+                    for (var i = 0; i < 2; ++i)
+                    {
+                        Assert.AreEqual(nameof(TestProperty), r.ReadString());
+                        Assert.IsTrue(r.ReadBoolean());
+                        Assert.AreEqual(TestProperty, r.ReadString());
+                    }
                 });
         }
 
@@ -59,25 +85,33 @@ namespace YAWL.Serialization.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void CannotWriteFunction()
+        public void WriteFunction()
         {
             TestWriteRead(
                 s =>
                 {
                     s.Serialize(() => TestFunction(), null);
-                }, r => { });
+                }, r =>
+                {
+                    Assert.AreEqual(SerializationConstants.DynamicName, r.ReadString());
+                    Assert.IsTrue(r.ReadBoolean());
+                    Assert.AreEqual(TestFunction(), r.ReadString());
+                });
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void CannotWriteExpression()
+        public void WriteExpression()
         {
             TestWriteRead(
                 s =>
                 {
                     s.Serialize(() => string.Empty + "Expression", null);
-                }, r =>{});
+                }, r =>
+                {
+                    Assert.AreEqual(SerializationConstants.DynamicName, r.ReadString());
+                    Assert.IsTrue(r.ReadBoolean());
+                    Assert.AreEqual(string.Empty + "Expression", r.ReadString());
+                });
         }
 
         [TestMethod]

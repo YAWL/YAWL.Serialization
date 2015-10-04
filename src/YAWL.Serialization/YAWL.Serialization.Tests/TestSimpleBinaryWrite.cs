@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
+
+using System;
 using System.IO;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -19,6 +19,22 @@ namespace YAWL.Serialization.Binary
             Writer = writer;
         }
 
+        public void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string))
+        {
+            if (get == null)
+                throw new ArgumentNullException();
+
+            var value = get.Compile()();
+
+            var name = ExpressionHelpers.GetNameFromExpression(get);
+
+            Writer.Write(name);
+            Writer.Write(value != null);
+
+            if (value != null)
+                Writer.Write(value);
+        }
+
         public void Serialize<T>(Expression<Func<T>> get, Action<T> set, T defaultValue = default(T))
         {
             throw new NotImplementedException();
@@ -37,22 +53,6 @@ namespace YAWL.Serialization.Binary
         public void Serialize(Dictionary<string, object> values)
         {
             throw new NotImplementedException();
-        }
-
-        public void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string))
-        {
-            if (get == null)
-                throw new ArgumentNullException();
-
-            var value = get.Compile()();
-
-            var name = ExpressionHelpers.GetNameFromExpression(get);
-
-            Writer.Write(name);
-            Writer.Write(value != null);
-
-            if (value != null)
-                Writer.Write(value);
         }
     }
 }

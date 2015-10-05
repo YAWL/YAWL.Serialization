@@ -9,6 +9,11 @@ namespace YAWL.Serialization
     public interface ISerializer
     {
         /// <summary>
+        /// Serialize string.
+        /// </summary>
+        void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string));
+
+        /// <summary>
         /// Serialize any value. If T implements IBinarySerializable, it will recursively
         /// serialize subobjects.
         /// </summary>
@@ -29,10 +34,5 @@ namespace YAWL.Serialization
         /// </summary>
         /// <param name="values"></param>
         void Serialize(Dictionary<string, object> values);
-
-        /// <summary>
-        /// Serialize string.
-        /// </summary>
-        void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string));
     }
 }

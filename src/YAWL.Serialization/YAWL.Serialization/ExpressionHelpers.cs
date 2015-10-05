@@ -7,7 +7,7 @@ namespace YAWL.Serialization
 {
     public class ExpressionHelpers
     {
-        public static string GetNameFromExpression(Expression<Func<string>> expression)
+        public static string GetNameFromExpression<T>(Expression<Func<T>> expression)
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));

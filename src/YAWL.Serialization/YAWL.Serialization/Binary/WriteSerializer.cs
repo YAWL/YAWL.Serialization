@@ -2,57 +2,52 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using YAWL.Serialization.Utilities;
+using PropertyInfo = YAWL.Serialization.Utilities.PropertyInfo;
 
 namespace YAWL.Serialization.Binary
 {
     public class WriteSerializer : ISerializer
     {
-        public BinaryWriter Writer { get; }
+        private readonly Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
+        public ReadOnlyDictionary<string, PropertyInfo> Properties { get; }
 
-        public WriteSerializer(BinaryWriter writer)
+        public WriteSerializer()
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
-
-            Writer = writer;
-        }
-
-        public void Serialize(Expression<Func<string>> get, Action<string> set, string defaultValue = default(string))
-        {
-            if (get == null)
-                throw new ArgumentNullException();
-
-            var value = get.Compile()();
-
-            var name = ExpressionHelpers.GetNameFromExpression(get);
-
-            Writer.Write(name);
-            Writer.Write(value != null);
-
-            if (value != null)
-                Writer.Write(value);
+            Properties = new ReadOnlyDictionary<string, PropertyInfo>(properties);
         }
 
         public void Serialize<T>(Expression<Func<T>> get, Action<T> set, T defaultValue = default(T))
         {
-            throw new NotImplementedException();
+            if (get == null)
+                throw new ArgumentNullException();
+
+            AddProperty(PropertyTypeHelpers.GetTypeFromType<T>(), get);
         }
 
-        public void Serialize<T>(Expression<Func<T?>> get, Action<T?> set) where T : struct
+        private void AddProperty<T>(PropertyType propertyType, Expression<Func<T>> getExpression)
         {
-            throw new NotImplementedException();
-        }
+            if (getExpression == null)
+                throw new ArgumentNullException(nameof(getExpression));
 
-        public void SerializeList<T>(Expression<Func<List<T>>> get, Action<List<T>> set)
-        {
-            throw new NotImplementedException();
-        }
+            var name = ExpressionHelpers.GetNameFromExpression(getExpression);
+            var value = getExpression.Compile()();
 
-        public void Serialize(Dictionary<string, object> values)
-        {
-            throw new NotImplementedException();
+            if ((name == SerializationConstants.ConstantName ||
+                name == SerializationConstants.DynamicName) &&
+                properties.ContainsKey(name))
+            {
+                var baseName = name;
+                var i = 0;
+                while (properties.ContainsKey(baseName + ++i))
+                {
+                }
+                name = baseName + i;
+            }
+
+            properties.Add(name, new PropertyInfo(propertyType, name, value));
         }
     }
 }

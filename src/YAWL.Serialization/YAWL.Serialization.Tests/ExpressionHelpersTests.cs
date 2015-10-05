@@ -1,22 +1,23 @@
 ﻿// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
 
 using System;
+using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace YAWL.Serialization.Tests
 {
     [TestClass]
-    public class TestExpressionName
+    public class ExpressionHelpersTests
     {
         public string PropName { get; set; }
-        private string field;
-        private const string constant = "";
+        private string field = "field";
+        private const string constant = "constant";
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpressionThrowsException()
         {
-            ExpressionHelpers.GetNameFromExpression(null);
+            ExpressionHelpers.GetNameFromExpression((Expression<Func<string>>)null);
         }
 
         [TestMethod]

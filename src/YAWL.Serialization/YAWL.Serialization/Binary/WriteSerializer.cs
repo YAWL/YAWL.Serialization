@@ -35,19 +35,28 @@ namespace YAWL.Serialization.Binary
             var name = ExpressionHelpers.GetNameFromExpression(getExpression);
             var value = getExpression.Compile()();
 
-            if ((name == SerializationConstants.ConstantName ||
-                name == SerializationConstants.DynamicName) &&
-                properties.ContainsKey(name))
+            if (propertyType == PropertyType.Serializable)
             {
-                var baseName = name;
-                var i = 0;
-                while (properties.ContainsKey(baseName + ++i))
-                {
-                }
-                name = baseName + i;
+                var childSerializer = new WriteSerializer();
+                ((ISerializable)value).Serialize(childSerializer);
+                properties.Add(name, new PropertyInfo(propertyType, name, childSerializer.Properties));
             }
+            else
+            {
+                if ((name == SerializationConstants.ConstantName ||
+                    name == SerializationConstants.DynamicName) &&
+                    properties.ContainsKey(name))
+                {
+                    var baseName = name;
+                    var i = 0;
+                    while (properties.ContainsKey(baseName + ++i))
+                    {
+                    }
+                    name = baseName + i;
+                }
 
-            properties.Add(name, new PropertyInfo(propertyType, name, value));
+                properties.Add(name, new PropertyInfo(propertyType, name, value));
+            }
         }
     }
 }
